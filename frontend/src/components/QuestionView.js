@@ -5,13 +5,13 @@ import Search from './Search';
 import $ from 'jquery';
 
 class QuestionView extends Component {
-  constructor() {
+  constructor () {
     super();
     this.state = {
       questions: [],
       page: 1,
       totalQuestions: 0,
-      categories: {},
+      categories: [],
       currentCategory: null,
     };
   }
@@ -84,7 +84,7 @@ class QuestionView extends Component {
 
   submitSearch = (searchTerm) => {
     $.ajax({
-      url: `/questions`, //TODO: update request URL
+      url: `/questions/search`, //TODO: update request URL
       type: 'POST',
       dataType: 'json',
       contentType: 'application/json',
@@ -138,7 +138,22 @@ class QuestionView extends Component {
             Categories
           </h2>
           <ul>
-            {Object.keys(this.state.categories).map((id) => (
+            {this.state.categories.map((category)=> (
+              <li
+                key={category.id}
+                onClick={() => {
+                  this.getByCategory(category.id);
+                }}
+              >
+                {category.type}
+                <img
+                  className='category'
+                  alt={`${category.type.toLowerCase()}`}
+                  src={`${category.type.toLowerCase()}.svg`}
+                />
+              </li>
+            ))}
+            {/* {Object.keys(this.state.categories).map((id) => (
               <li
                 key={id}
                 onClick={() => {
@@ -148,11 +163,11 @@ class QuestionView extends Component {
                 {this.state.categories[id]}
                 <img
                   className='category'
-                  alt={`${this.state.categories[id].toLowerCase()}`}
-                  src={`${this.state.categories[id].toLowerCase()}.svg`}
+                  alt={`${this.state.categories[id].type.toLowerCase()}`}
+                  src={`${this.state.categories[id].type.toLowerCase()}.svg`}
                 />
               </li>
-            ))}
+            ))} */}
           </ul>
           <Search submitSearch={this.submitSearch} />
         </div>
@@ -163,7 +178,7 @@ class QuestionView extends Component {
               key={q.id}
               question={q.question}
               answer={q.answer}
-              category={this.state.categories[q.category]}
+              category={this.state.categories.find(category => category.id === q.category)}
               difficulty={q.difficulty}
               questionAction={this.questionAction(q.id)}
             />
